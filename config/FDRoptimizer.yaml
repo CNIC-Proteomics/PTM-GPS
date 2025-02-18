@@ -1,0 +1,48 @@
+AddFDR: true
+ColumnNames:
+- - - pgm
+    - LEVEL
+  - - pgmFreq
+    - REL
+  - Z_pgm2p_limma
+- - - pgm
+    - LEVEL
+  - - pgmFreq
+    - REL
+  - Z_pgm2p_limma-NM(g&REL)
+- - - pgm
+    - LEVEL
+  - - pgmFreq
+    - REL
+  - Z_pgm2p_dNM_limma
+- - - p
+    - LEVEL
+  - - pFreq
+    - REL
+  - Z_p2qf_limma
+- - - qf
+    - LEVEL
+  - - qfFreq
+    - REL
+  - Z_qf2q_limma
+- - - q
+    - LEVEL
+  - - qFreq
+    - REL
+  - Z_q2all_limma
+FDR_Thr:
+- 0.01
+- 0.05
+- 0.1
+- 1
+Window:
+- 0
+- 50
+groups:
+- Ob-nOb
+- Di-nDi
+- St-nSt
+- Fi-nFi
+- M-F
+infile: S:\LAB_JVC\RESULTADOS\VMGS\MAFLD\PTMs\AutoQReporter\LIMMA_NM_Tabla_final_v3.tsv
+outfolder: S:\LAB_JVC\RESULTADOS\VMGS\MAFLD\PTMs\AutoQReporter

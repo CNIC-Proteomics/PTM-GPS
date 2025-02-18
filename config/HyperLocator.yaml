@@ -1,0 +1,7 @@
+#
+# PARAMETERS: Hypermod.yaml
+#
+
+SigMetric: pvalue
+
+MetricThr: 0.05

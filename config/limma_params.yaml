@@ -1,0 +1,34 @@
+ColumnNames:
+- - - pgm
+    - LEVEL
+  - Z_pgm2p
+- - - pgm
+    - LEVEL
+  - Z_pgm2p_dNM
+- - - p
+    - LEVEL
+  - Z_p2qf
+- - - qf
+    - LEVEL
+  - Z_qf2q
+- - - q
+    - LEVEL
+  - Z_q2all
+hypothesis_testing:
+- - Ob
+  - nOb
+- - Di
+  - nDi
+- - St
+  - nSt
+- - Fi
+  - nFi
+- - M
+  - F
+outfile: S:\LAB_JVC\RESULTADOS\VMGS\MAFLD\PTMs\AutoQReporter\LIMMA_NM_Tabla_final_v3.tsv
+report_infile: S:\LAB_JVC\RESULTADOS\VMGS\MAFLD\PTMs\AutoQReporter\NM_Tabla_final_v3.tsv
+sample_table: E:\Software\AutoQReport\limma_sample_table_MAFLD.tsv
+test_type:
+- limma
+- limma_with_duplicates
+- t-test

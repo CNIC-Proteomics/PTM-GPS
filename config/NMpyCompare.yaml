@@ -1,0 +1,8 @@
+NM_columns:
+- g#REL:
+  - NM
+high_level: p#LEVEL
+infile: S:\LAB_JVC\RESULTADOS\VMGS\MAFLD\PTMs\AutoQReporter\Tabla_final_v3.tsv
+integration: Z_pgm2p
+low_level: pgm#LEVEL
+scanfreq: pgmFreq#REL

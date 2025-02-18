@@ -1,0 +1,12 @@
+bootstrapping           Bootstrapping the logging package.
+getHandler              Retrieves a handler from a logger.
+getLogger               Set defaults and get the named logger.
+handlers-management     Add a handler to or remove one from a logger.
+inbuilt-actions         Predefined(sample) handler actions
+logging-entrypoints     Entry points for logging actions
+logging-package         A tentative logging package.
+loglevels               The logging levels, names and values
+resetMsgComposer        Resets previously set message composer.
+setLevel                Set logging.level for the object.
+setMsgComposer          Sets message composer for logger.
+updateOptions           Changes settings of logger or handler.
