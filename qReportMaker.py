@@ -402,10 +402,10 @@ def qReportDesign(config, quan, qTableD, contrast):
         if len(config['plotFolder'])>1: #and os.path.exists(config['plotFolder'][1]):
             qTableD = qTableD[[qTableD.columns[1]]].rename(columns={'':'Filt'}).join(qTableD)
             
-            ptmMapPath = config['plotFolder'][1] if config['plotFolder'][1] else os.path.join(config['outfolder'], f'PTMMaps/{contrast}/plots_FDR')
+            ptmMapPath = config['plotFolder'][1] if config['plotFolder'][1] else os.path.join(config['outfolder'], f'PTMMaps/{contrast}/plots_filtered')
             plotted_q = [os.path.splitext(i)[0] for i in os.listdir(ptmMapPath)]
             
-            ptmMapPathExcel = config['plotFolder'][1] if config['plotFolder'][1] else f'../../../PTMMaps/{contrast}/plots_FDR'
+            ptmMapPathExcel = config['plotFolder'][1] if config['plotFolder'][1] else f'../../../PTMMaps/{contrast}/plots_filtered'
             qTableD[qTableD.columns[0]] = \
                 [f"=HYPERLINK(\"{os.path.join(ptmMapPathExcel, i)}.html\", \"{i}\")" if i in plotted_q else '' if i=='Sum' else i for i in qTableD.iloc[:, 0]]
         
