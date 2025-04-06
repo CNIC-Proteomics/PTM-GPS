@@ -141,7 +141,7 @@ def generateFreqTable(config, sign_i, fdr_i, rep, contrast):
         })
 
     
-    outFolder = os.path.join(config['outfolder'], 'FreqTables', contrast, f"{config['qvalue_dNM'][1]}-{fdr_i}")
+    outFolder = os.path.join(args.outdir, 'FreqTables', contrast, f"{config['qvalue_dNM'][1]}-{fdr_i}")
     if not os.path.exists(outFolder):
         os.makedirs(outFolder, exist_ok=True)
     
@@ -384,31 +384,29 @@ def qReportDesign(config, quan, qTableD, contrast):
         ])
     
     # Add info contained in q2info
-    if config['q2info'] and os.path.isfile(config['q2info']):
-        q2info = pd.read_csv(config['q2info'], sep='\t')
+    if args.q2info and os.path.isfile(args.q2info):
+        q2info = pd.read_csv(args.q2info, sep='\t')
         q2info.columns = pd.MultiIndex.from_tuples([qTableD.columns[0] if n==0 else (i,'','') for n,i in enumerate(q2info.columns)])
         qTableD = pd.merge(q2info, qTableD, how='right', on=[qTableD.columns[0]])
     
-    if config['plotFolder']:# and os.path.exists(config['plotFolder'][0]):
-        qTableD = qTableD[[qTableD.columns[0]]].rename(columns={'':'NoFilt'}).join(qTableD)
+    if args.outdir:
+        ptmMapPath = os.path.join(args.outdir, config.get("path_plots_Without_threshold"), contrast)
+        ptmMapPathFDR = os.path.join(args.outdir, config.get("path_plots_with_threshold"), contrast)
+        ptmMapPathExcel = os.path.join('../../../', os.path.join(config.get("path_plots_Without_threshold"), contrast))
+        ptmMapPathFDRExcel = os.path.join('../../../', os.path.join(config.get("path_plots_with_threshold"), contrast))
         
-        ptmMapPath = config['plotFolder'][0] if config['plotFolder'][0] else os.path.join(config['outfolder'], f'PTMMaps/{contrast}/plots')
-        plotted_q = [os.path.splitext(i)[0] for i in os.listdir(ptmMapPath)]
-        
-        ptmMapPathExcel = config['plotFolder'][0] if config['plotFolder'][0] else f'../../../PTMMaps/{contrast}/plots'
-        qTableD[qTableD.columns[0]] = \
-            [f"=HYPERLINK(\"{os.path.join(ptmMapPathExcel, i)}.html\", \"{i}\")" if i in plotted_q else '' if i=='Sum' else i for i in qTableD.iloc[:, 0]]
-        
-        if len(config['plotFolder'])>1: #and os.path.exists(config['plotFolder'][1]):
-            qTableD = qTableD[[qTableD.columns[1]]].rename(columns={'':'Filt'}).join(qTableD)
-            
-            ptmMapPath = config['plotFolder'][1] if config['plotFolder'][1] else os.path.join(config['outfolder'], f'PTMMaps/{contrast}/plots_filtered')
+        if os.path.isdir(ptmMapPath):
             plotted_q = [os.path.splitext(i)[0] for i in os.listdir(ptmMapPath)]
-            
-            ptmMapPathExcel = config['plotFolder'][1] if config['plotFolder'][1] else f'../../../PTMMaps/{contrast}/plots_filtered'
+            qTableD = qTableD[[qTableD.columns[0]]].rename(columns={'':'NoFilt'}).join(qTableD)
             qTableD[qTableD.columns[0]] = \
                 [f"=HYPERLINK(\"{os.path.join(ptmMapPathExcel, i)}.html\", \"{i}\")" if i in plotted_q else '' if i=='Sum' else i for i in qTableD.iloc[:, 0]]
-        
+            
+        if os.path.isdir(ptmMapPathFDR):
+            plotted_q = [os.path.splitext(i)[0] for i in os.listdir(ptmMapPathFDR)]                
+            qTableD = qTableD[[qTableD.columns[1]]].rename(columns={'':'Filt'}).join(qTableD)
+            qTableD[qTableD.columns[0]] = \
+                [f"=HYPERLINK(\"{os.path.join(ptmMapPathFDRExcel, i)}.html\", \"{i}\")" if i in plotted_q else '' if i=='Sum' else i for i in qTableD.iloc[:, 0]]
+
     return qTableD
 
 
@@ -480,11 +478,11 @@ def qReportMergeUpDown(params):
 
 def qReportWrite(config, fdr_i, sign_i, quan, qTableD, contrast):
     
-    outFolder = os.path.join(config['outfolder'], 'qReport', contrast, f'{config["qvalue_dNM"][1]}-{fdr_i}')
+    outFolder = os.path.join(args.outdir, config['outDirName'], contrast, f'{config["qvalue_dNM"][1]}-{fdr_i}')
     if not os.path.exists(outFolder):
         os.makedirs(outFolder, exist_ok=True)
     
-    qReportPath = os.path.join(outFolder, f'qReport-{fdr_i}_{sign_i}_{quan}.xlsx')
+    qReportPath = os.path.join(outFolder, f'qReports-{fdr_i}_{sign_i}_{quan}.xlsx')
     
     header = list(zip(*qTableD.columns.tolist()))
     qTableD.columns = np.arange(0, qTableD.shape[1])
@@ -549,8 +547,8 @@ def qReportContrast(rep0, config, contrast):
     repPQF = getRepQF(rep0, config, contrast)
     
     # Create folder with output files
-    # if not os.path.exists(os.path.join(config['outfolder'], 'FreqTables', contrast)):
-    #     os.makedirs(os.path.join(config['outfolder'], 'FreqTables', contrast), exist_ok=True)
+    # if not os.path.exists(os.path.join(args.outdir, 'FreqTables', contrast)):
+    #     os.makedirs(os.path.join(args.outdir, 'FreqTables', contrast), exist_ok=True)
     
     
     # All combinations FDR x Sign
@@ -593,7 +591,7 @@ def qReportContrast(rep0, config, contrast):
     params = params + qReportMergeUpDown(params)
     
 
-    if config['outfolder']:
+    if args.outdir:
         logging.info('Writing output')
         _ = [qReportWrite(*i) for i in params]
     
@@ -655,7 +653,7 @@ def getBasalQReport(rep, qCol, qDescCol, pdmFreq, ptmCol):
         basal[freqType].index = pd.MultiIndex.from_tuples(basal[freqType].index)
         basal[freqType] = basal[freqType].iloc[1:, :]
         
-        outFolder = os.path.join(config['outfolder'], 'qReport', "Basal")
+        outFolder = os.path.join(args.outdir, config['outDirName'], "Basal")
         if not os.path.exists(outFolder):
             os.makedirs(outFolder, exist_ok=True)
         basal[freqType].to_csv(os.path.join(outFolder, f'Basal_{name}.tsv'), sep='\t')
@@ -677,9 +675,9 @@ def main(config, file=None):
     if file:
         rep = file.copy()
     else:
-        logging.info(f"Reading Report: {config['infile']}")
+        logging.info(f"Reading Report: {args.infile}")
         rep = pd.read_csv(
-            config['infile'], 
+            args.infile, 
             sep='\t', 
             low_memory=False, 
             header=[0,1],
@@ -710,12 +708,16 @@ if __name__ == '__main__':
     
 
     parser = argparse.ArgumentParser(
-        description='qTableMaker',
+        description='qReportMaker',
         epilog='''
         Example:
-            python qTableMaker.py
+            python qReportMaker.py
         ''')
 
+    parser.add_argument('-i', '--infile', required=True, help='Path to report with the FDR results')
+    parser.add_argument('-q', '--q2info', help='Path to report with protein information')
+    parser.add_argument('-p', '--ptmmap', help='Path to PTMMap plots')
+    parser.add_argument('-o', '--outdir', required=True, help='Path to the folder where output files will be saved')
     parser.add_argument('-c', '--config', default=os.path.join(os.path.dirname(__file__), 'qReportMaker.yaml'), type=str, help='Path to config file')
 
     args = parser.parse_args()
@@ -723,13 +725,20 @@ if __name__ == '__main__':
 
     with open(args.config) as file:
         config = yaml.load(file, yaml.FullLoader)
+        # get the config section
+        config = config.get('qReportMaker')
+        
+
+    # prepare workspace
+    if not os.path.exists(args.outdir):
+        os.makedirs(args.outdir, exist_ok=False)
         
 
     logging.basicConfig(level=logging.INFO,
-                        format='qTableMaker.py - '+str(os.getpid())+' - %(asctime)s - %(levelname)s - %(message)s',
+                        format='qReportMaker.py - '+str(os.getpid())+' - %(asctime)s - %(levelname)s - %(message)s',
                         datefmt='%m/%d/%Y %I:%M:%S %p',
                         handlers=[logging.FileHandler(
-                            os.path.splitext(config['infile'])[0]+'.log'
+                            os.path.join(args.outdir, 'qReportMaker.log')
                             ),
                             logging.StreamHandler()])
 
